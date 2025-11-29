@@ -24,6 +24,7 @@ public class LoginPanel extends BasePanel {
     public LoginPanel(MainFrame mainFrame) {
         super(mainFrame);
         this.authController = new AuthenticationController();
+        initializeComponents();
     }
 
     @Override

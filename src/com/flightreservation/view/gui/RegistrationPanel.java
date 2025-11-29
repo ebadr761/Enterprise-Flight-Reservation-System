@@ -27,6 +27,7 @@ public class RegistrationPanel extends BasePanel {
     public RegistrationPanel(MainFrame mainFrame) {
         super(mainFrame);
         this.authController = new AuthenticationController();
+        initializeComponents();
     }
 
     @Override

@@ -40,6 +40,7 @@ public class CustomerDashboard extends BasePanel {
         this.bookingController = new BookingController();
         this.paymentController = new PaymentController();
         this.customer = (Customer) authController.getCurrentUser();
+        initializeComponents();
     }
 
     @Override
@@ -228,7 +229,7 @@ public class CustomerDashboard extends BasePanel {
             } else if (!dateStr.isEmpty()) {
                 try {
                     LocalDate date = LocalDate.parse(dateStr);
-                    flights = flightController.searchFlightsByDate(date);
+                    flights = flightController.searchFlights(null, null, date, null);
                 } catch (Exception ex) {
                     showError("Invalid date format. Use YYYY-MM-DD");
                     return;
@@ -244,7 +245,7 @@ public class CustomerDashboard extends BasePanel {
 
                 tableModel.addRow(new Object[] {
                         flight.getFlightNumber(),
-                        flight.getAirlineName(),
+                        flight.getAirline(),
                         flight.getOrigin(),
                         flight.getDestination(),
                         flight.getDepartureTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
@@ -311,15 +312,18 @@ public class CustomerDashboard extends BasePanel {
                 if (result != JOptionPane.OK_OPTION)
                     return;
 
+                String fullName = nameField.getText();
+                String[] nameParts = fullName.split(" ", 2);
+
                 Passenger passenger = new Passenger();
-                passenger.setFullName(nameField.getText());
+                passenger.setFirstName(nameParts.length > 0 ? nameParts[0] : fullName);
+                passenger.setLastName(nameParts.length > 1 ? nameParts[1] : "");
                 passenger.setPassportNumber(passportField.getText());
-                passenger.setAge(Integer.parseInt(ageField.getText()));
                 passengers.add(passenger);
             }
 
             // Create booking
-            Booking booking = bookingController.createBooking(customer, flight, passengers);
+            Booking booking = bookingController.createBooking(customer.getUserId(), flight.getFlightId(), passengers);
 
             if (booking != null) {
                 // Process payment
@@ -329,7 +333,8 @@ public class CustomerDashboard extends BasePanel {
                         JOptionPane.QUESTION_MESSAGE, null, paymentMethods, paymentMethods[0]);
 
                 if (selectedMethod != null) {
-                    Payment payment = paymentController.processPayment(booking, selectedMethod);
+                    Payment payment = paymentController.processPayment(booking.getBookingId(), booking.getTotalAmount(),
+                            selectedMethod);
                     if (payment != null) {
                         showSuccess("Booking confirmed! Booking reference: " + booking.getBookingReference());
                     }

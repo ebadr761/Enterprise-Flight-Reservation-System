@@ -29,6 +29,7 @@ public class FlightAgentDashboard extends BasePanel {
         this.flightController = new FlightController();
         this.bookingController = new BookingController();
         this.agent = (FlightAgent) authController.getCurrentUser();
+        initializeComponents();
     }
 
     @Override

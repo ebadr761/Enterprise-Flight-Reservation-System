@@ -36,6 +36,7 @@ public class AdminDashboard extends BasePanel {
         this.flightController = new FlightController();
         this.bookingController = new BookingController();
         this.admin = (Admin) authController.getCurrentUser();
+        initializeComponents();
     }
 
     @Override
@@ -184,7 +185,7 @@ public class AdminDashboard extends BasePanel {
         for (Flight flight : flights) {
             tableModel.addRow(new Object[] {
                     flight.getFlightNumber(),
-                    flight.getAirlineName(),
+                    flight.getAirline(),
                     flight.getOrigin(),
                     flight.getDestination(),
                     flight.getDepartureTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
@@ -256,6 +257,7 @@ public class AdminDashboard extends BasePanel {
         JTextField arrivalField = new JTextField();
         JTextField priceField = new JTextField();
         JTextField seatsField = new JTextField();
+        JTextField aircraftField = new JTextField();
 
         panel.add(new JLabel("Flight Number:"));
         panel.add(flightNumberField);
@@ -273,26 +275,25 @@ public class AdminDashboard extends BasePanel {
         panel.add(priceField);
         panel.add(new JLabel("Total Seats:"));
         panel.add(seatsField);
+        panel.add(new JLabel("Aircraft Type:"));
+        panel.add(aircraftField);
 
         int result = JOptionPane.showConfirmDialog(this, panel, "Add New Flight", JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
             try {
-                Flight flight = new Flight();
-                flight.setFlightNumber(flightNumberField.getText());
-                flight.setAirlineName(airlineField.getText());
-                flight.setOrigin(originField.getText());
-                flight.setDestination(destField.getText());
-                flight.setDepartureTime(
-                        LocalDateTime.parse(departureField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-                flight.setArrivalTime(
-                        LocalDateTime.parse(arrivalField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-                flight.setPrice(Double.parseDouble(priceField.getText()));
-                flight.setTotalSeats(Integer.parseInt(seatsField.getText()));
-                flight.setAvailableSeats(Integer.parseInt(seatsField.getText()));
-                flight.setStatus(FlightStatus.SCHEDULED);
+                Flight flight = flightController.createFlight(
+                        flightNumberField.getText(),
+                        airlineField.getText(),
+                        originField.getText(),
+                        destField.getText(),
+                        LocalDateTime.parse(departureField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                        LocalDateTime.parse(arrivalField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+                        Double.parseDouble(priceField.getText()),
+                        Integer.parseInt(seatsField.getText()),
+                        aircraftField.getText());
 
-                if (flightController.addFlight(flight)) {
+                if (flight != null) {
                     showSuccess("Flight added successfully");
                     refreshFlightsPanel();
                 }

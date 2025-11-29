@@ -16,7 +16,7 @@ public abstract class BasePanel extends JPanel {
         this.mainFrame = mainFrame;
         setBackground(AppTheme.BACKGROUND);
         setLayout(new BorderLayout());
-        initializeComponents();
+        // Note: Subclasses must call initializeComponents() after setting their fields
     }
 
     /**
