@@ -1,13 +1,12 @@
 package com.flightreservation;
 
 import com.flightreservation.dao.DatabaseConnection;
-import com.flightreservation.view.MainMenuUI;
+import com.flightreservation.view.gui.MainFrame;
+
+import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Print welcome banner
-        printBanner();
-
         // Initialize database connection
         System.out.println("Initializing Flight Reservation System...");
         DatabaseConnection dbConnection = DatabaseConnection.getInstance();
@@ -16,35 +15,37 @@ public class Main {
             System.err.println("\n✗ Failed to connect to database!");
             System.err.println("Please ensure MySQL is running and the database 'flight_reservation_db' exists.");
             System.err.println("Run the schema.sql file to create the database and tables.");
+
+            // Show error dialog
+            JOptionPane.showMessageDialog(null,
+                    "Failed to connect to database!\n\n" +
+                            "Please ensure MySQL is running and the database exists.\n" +
+                            "Run the schema.sql file to create the database and tables.",
+                    "Database Connection Error",
+                    JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
 
-        // Start the application
-        System.out.println("System initialized successfully!\n");
+        System.out.println("System initialized successfully!");
+        System.out.println("Launching GUI...\n");
 
-        MainMenuUI mainMenu = new MainMenuUI();
-        mainMenu.display();
+        // Launch GUI on Event Dispatch Thread
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // Set system look and feel
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        // Cleanup on exit
-        dbConnection.closeConnection();
-    }
+            MainFrame mainFrame = new MainFrame();
+            mainFrame.setVisible(true);
+        });
 
-    private static void printBanner() {
-        System.out.println("\n");
-        System.out.println("╔═══════════════════════════════════════════════════════════════════╗");
-        System.out.println("║                                                                   ║");
-        System.out.println("║     ✈✈✈  FLIGHT RESERVATION SYSTEM  ✈✈✈                         ║");
-        System.out.println("║                                                                   ║");
-        System.out.println("║     A Comprehensive Flight Booking Management System             ║");
-        System.out.println("║                                                                   ║");
-        System.out.println("║     Features:                                                     ║");
-        System.out.println("║     • Multi-role access (Customer, Agent, Admin)                 ║");
-        System.out.println("║     • Flight search and booking                                  ║");
-        System.out.println("║     • Payment processing simulation                              ║");
-        System.out.println("║     • Booking management and cancellation                        ║");
-        System.out.println("║     • Flight schedule management                                 ║");
-        System.out.println("║                                                                   ║");
-        System.out.println("╚═══════════════════════════════════════════════════════════════════╝");
-        System.out.println();
+        // Add shutdown hook for cleanup
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("\nShutting down...");
+            dbConnection.closeConnection();
+        }));
     }
 }
