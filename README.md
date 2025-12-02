@@ -1,6 +1,6 @@
 # Flight Reservation System
 
-A comprehensive CLI-based Flight Reservation System built with Java and MySQL, featuring role-based access control and complete booking management capabilities.
+A comprehensive CLI-based (soon to be GUI) Flight Reservation System built with Java and MySQL, featuring role-based access control and complete booking management capabilities.
 
 ## Features
 
