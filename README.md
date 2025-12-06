@@ -105,6 +105,11 @@ This project serves as a detailed case study in applying GoF (Gang of Four) Desi
     *   Open the project in your preferred IDE.
     *   Locate and run the main entry point: `src/Main.java`.
 
+5. **Troubleshooting**
+   * If you want a quick demo or some help troubleshooting the process of getting your JBDC file recognized by the program you can watch this video: 
+   * https://youtu.be/-MewEcLvZEc
+
+
 ---
 
 ## 📱 Usage
